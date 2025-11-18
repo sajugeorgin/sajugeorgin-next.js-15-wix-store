@@ -4,8 +4,8 @@ import { z } from "zod";
 export const env = createEnv({
   server: {},
   client: {
-    NEXT_PUBLIC_WIX_CLIENT_ID: z.url(),
-    NEXT_PUBLIC_BASE_URL: z.string().min(1),
+    NEXT_PUBLIC_WIX_CLIENT_ID: z.string().min(1),
+    NEXT_PUBLIC_BASE_URL: z.url(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,

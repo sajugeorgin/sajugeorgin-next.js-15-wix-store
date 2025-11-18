@@ -1,5 +1,5 @@
 import { createClient, OAuthStrategy } from "@wix/sdk";
-import { products, collections } from "@wix/stores";
+import { productsV3 } from "@wix/stores";
 import { reviews } from "@wix/reviews";
 import { files } from "@wix/media";
 import { members } from "@wix/members";
@@ -9,8 +9,7 @@ import { env } from "@/config/env";
 export function myWixClient() {
   return createClient({
     modules: {
-      products,
-      collections,
+      productsV3,
       redirects,
       files,
       reviews,

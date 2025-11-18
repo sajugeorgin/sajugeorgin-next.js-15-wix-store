@@ -44,6 +44,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.90.8
         version: 5.90.8(react@19.2.0)
+      '@wix/categories':
+        specifier: ^1.0.158
+        version: 1.0.158
       '@wix/data':
         specifier: ^1.0.334
         version: 1.0.334(@types/react@19.2.4)(@wix/headless-components@0.0.13(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
@@ -1378,6 +1381,9 @@ packages:
   '@wix/auto_sdk_categories_categories@1.0.78':
     resolution: {integrity: sha512-q/dZJdZI6NuIjm0B5WkdVUcuJ++bLeLq7/e52nbptb6vDVB8SG8P+VMhMFmVwIjGumCe1aqSaEIDHHFEOX77ow==}
 
+  '@wix/auto_sdk_categories_categories@1.0.80':
+    resolution: {integrity: sha512-aVOG5Fa8uA1jfJwUkKYMhDGz8E5GPrwcCmh93xifjFGM6579mmhyPYTgtrg4B6yCDhgyO84ehhpOfUKm/XfTGg==}
+
   '@wix/auto_sdk_data_backups@1.0.29':
     resolution: {integrity: sha512-pdd9ILYnIp6aX9aR694EBBs3UaX4RPEYH8ErfW8KIl6KTmoIFPE1GELPG+XWD6tW4EIraNpgO/e9jx3cCevAUA==}
 
@@ -1689,6 +1695,9 @@ packages:
 
   '@wix/auto_sdk_stores_wishlist@1.0.22':
     resolution: {integrity: sha512-9Fii2a+mnwZE06N8k4HQx93A2MI/ckLYIcar479YifH9ODVqdbrwyJb4Yqqn1mKMmW1aCKpXWTmvmKJR1lTsrA==}
+
+  '@wix/categories@1.0.158':
+    resolution: {integrity: sha512-FcMy8wgALOuIcbjm7fdmmzugOyewe+IxCGJNs/d74mxknoV4aLK0Ays+tZEdfroJIscpYefWl+XsQQ2zgfVJlw==}
 
   '@wix/data@1.0.334':
     resolution: {integrity: sha512-C6rP5ilmpk5XOjjU1paWvpkvZ0MMZDNxVTa/dPL/CAQ5zjfwMAjkrKlqMsx740zEG2PeJ4la+KBca7jRRQooIw==}
@@ -4511,6 +4520,11 @@ snapshots:
       '@wix/sdk-runtime': 0.5.0
       '@wix/sdk-types': 1.14.0
 
+  '@wix/auto_sdk_categories_categories@1.0.80':
+    dependencies:
+      '@wix/sdk-runtime': 1.0.0
+      '@wix/sdk-types': 1.14.0
+
   '@wix/auto_sdk_data_backups@1.0.29':
     dependencies:
       '@wix/sdk-runtime': 1.0.0
@@ -5030,6 +5044,10 @@ snapshots:
     dependencies:
       '@wix/sdk-runtime': 1.0.0
       '@wix/sdk-types': 1.14.0
+
+  '@wix/categories@1.0.158':
+    dependencies:
+      '@wix/auto_sdk_categories_categories': 1.0.80
 
   '@wix/data@1.0.334(@types/react@19.2.4)(@wix/headless-components@0.0.13(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))':
     dependencies:
