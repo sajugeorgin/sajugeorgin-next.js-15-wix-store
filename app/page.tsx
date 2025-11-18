@@ -3,6 +3,9 @@ import banner from "@/assets/banner.jpg";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { FeaturedProducts } from "@/components/products/FeaturedProducts";
+import { Suspense } from "react";
+import { LoadingState } from "@/components/loading/LoadingState";
 
 export default function Home() {
   return (
@@ -36,6 +39,13 @@ export default function Home() {
           <div className="from-secondary absolute inset-0 bg-linear-to-r via-transparent to-transparent" />
         </div>
       </div>
+
+      {/* APP DISPLAYS BANNER IMMEDIATELY SINCE WE ARE USING A SUSPENSE BOUNDARY */}
+      {/* FEATURED PRODUCTS ARE ONLY SHOWN AFTER THEY ARE FETCHED */}
+      {/* THIS IMPROVES PAGE LOAD TIMES AS THE ASYNC FUNCTION DOESN'T STOP THE BANNER FROM LOADING */}
+      <Suspense fallback={<LoadingState text={"Fetching Products"} />}>
+        <FeaturedProducts />
+      </Suspense>
     </main>
   );
 }
