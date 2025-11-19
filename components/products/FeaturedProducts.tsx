@@ -1,8 +1,7 @@
 import { delay } from "@/lib/utils";
-import { myWixClient } from "./wix-client.base";
+import { myWixClient } from "../../lib/wix-client.base";
 import Product from "./Product";
-
-const FEATURED_CATEGORY_ID = "597574d7-8606-436d-9028-d59ae4a0b0e7";
+import { FEATURED_PRODUCTS_CATEGORY_ID } from "@/lib/wix.categories";
 
 export async function FeaturedProducts() {
   await delay(1000);
@@ -12,7 +11,12 @@ export async function FeaturedProducts() {
   // Get ALL PRODUCTS using the Catalog ProductsV3 API
   const { items: allProducts } = await wixClient.productsV3
     .queryProducts({
-      fields: ["CURRENCY", "PLAIN_DESCRIPTION", "DIRECT_CATEGORIES_INFO"],
+      fields: [
+        "CURRENCY",
+        "PLAIN_DESCRIPTION",
+        "SUBSCRIPTION_PRICES_INFO",
+        "DIRECT_CATEGORIES_INFO",
+      ],
     })
     .descending("_updatedDate")
     .find(); // Execute query
@@ -22,7 +26,7 @@ export async function FeaturedProducts() {
   // E.g. fields: ["CURRENCY", "DIRECT_CATEGORIES_INFO"].
   const featuredProducts = allProducts.filter((product) =>
     product.directCategoriesInfo?.categories?.some(
-      (cat) => cat._id === FEATURED_CATEGORY_ID,
+      (cat) => cat._id === FEATURED_PRODUCTS_CATEGORY_ID,
     ),
   );
 
@@ -44,6 +48,11 @@ export async function FeaturedProducts() {
           <Product key={product._id} product={product} />
         ))}
       </div>
+
+      {/* Placeholder to see returned JSON - USEFUL FOR DEVELOPMENT */}
+      <pre>
+        {JSON.stringify(featuredProducts[featuredProducts.length - 1], null, 2)}
+      </pre>
     </div>
   );
 }

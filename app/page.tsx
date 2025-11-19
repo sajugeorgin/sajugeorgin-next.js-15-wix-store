@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FeaturedProducts } from "@/components/products/FeaturedProducts";
 import { Suspense } from "react";
-import { LoadingState } from "@/components/loading/LoadingState";
+import { LoadingSkeleton } from "@/components/loading/LoadingSkeleton";
 
 export default function Home() {
   return (
@@ -43,7 +43,7 @@ export default function Home() {
       {/* APP DISPLAYS BANNER IMMEDIATELY SINCE WE ARE USING A SUSPENSE BOUNDARY */}
       {/* FEATURED PRODUCTS ARE ONLY SHOWN AFTER THEY ARE FETCHED */}
       {/* THIS IMPROVES PAGE LOAD TIMES AS THE ASYNC FUNCTION DOESN'T STOP THE BANNER FROM LOADING */}
-      <Suspense fallback={<LoadingState text={"Fetching Products"} />}>
+      <Suspense fallback={<LoadingSkeleton />}>
         <FeaturedProducts />
       </Suspense>
     </main>
