@@ -1,4 +1,5 @@
 import { createClient, OAuthStrategy } from "@wix/sdk";
+import { currentCartV2, checkout } from "@wix/ecom";
 import { productsV3 } from "@wix/stores";
 import { reviews } from "@wix/reviews";
 import { files } from "@wix/media";
@@ -9,6 +10,8 @@ import { env } from "@/config/env";
 export function myWixClient() {
   return createClient({
     modules: {
+      currentCartV2,
+      checkout,
       productsV3,
       redirects,
       files,

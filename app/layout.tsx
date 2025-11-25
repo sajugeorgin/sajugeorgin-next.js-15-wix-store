@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Sen } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/general/Navbar";
+import Footer from "@/components/general/Footer";
 
 const sen = Sen({
   subsets: ["latin"],
@@ -21,7 +23,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sen.className} antialiased`}>{children}</body>
+      <body className={`${sen.className} antialiased`}>
+        <Navbar />
+
+        {children}
+
+        <Footer />
+      </body>
     </html>
   );
 }

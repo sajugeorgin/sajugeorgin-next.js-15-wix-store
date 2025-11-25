@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { productsV3 } from "@wix/stores";
 import WixImage from "../wix/WixImage";
-import ProductBadge from "@/components/ProductBadge";
+import ProductBadge from "@/components/products/ProductBadge";
 import { cn } from "@/lib/utils";
 
 interface IAllProducts {
