@@ -4,7 +4,7 @@ import Product from "./Product";
 import { FEATURED_PRODUCTS_CATEGORY_ID } from "@/lib/wix.categories";
 
 export async function FeaturedProducts() {
-  await delay(1000);
+  await delay(3000);
 
   const wixClient = myWixClient(); // Use the WIX client
 
@@ -50,9 +50,9 @@ export async function FeaturedProducts() {
       </div>
 
       {/* Placeholder to see returned JSON - USEFUL FOR DEVELOPMENT */}
-      <pre>
+      {/* <pre>
         {JSON.stringify(featuredProducts[featuredProducts.length - 1], null, 2)}
-      </pre>
+      </pre> */}
     </div>
   );
 }

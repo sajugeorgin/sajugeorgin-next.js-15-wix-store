@@ -7,8 +7,10 @@ export function LoadingSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <Skeleton
           key={i}
-          className="h-115 w-full bg-gray-300 md:h-90 xl:h-108"
-        />
+          className="h-115 w-full animate-pulse bg-gray-300 transition-transform duration-300 md:h-90 xl:h-108"
+        >
+          <img src={"/placeholder.png"} />
+        </Skeleton>
       ))}
     </div>
   );
