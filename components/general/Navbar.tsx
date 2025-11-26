@@ -1,8 +1,8 @@
-import { myWixClient } from "@/lib/wix-client.base";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/logo.png";
 import { ShoppingCartIcon } from "lucide-react";
+import { getCart } from "@/wix-api/cart";
 
 const Navbar = async () => {
   // GET THE USERS CART (AWAIT) AND RETURN THE CART OBJECT FROM THE RESPONSE
@@ -36,22 +36,5 @@ const Navbar = async () => {
     </header>
   );
 };
-
-// ASYNC FUNCTION TO GET THE A USER'S CURRENT CART
-async function getCart() {
-  const wixClient = myWixClient();
-
-  try {
-    return await wixClient.currentCartV2.getCurrentCart();
-  } catch (error) {
-    if (
-      (error as any).details.applicationError.code === "CURRENT_CART_NOT_FOUND"
-    ) {
-      return null;
-    } else {
-      throw error;
-    }
-  }
-}
 
 export default Navbar;

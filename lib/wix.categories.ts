@@ -1,2 +1,6 @@
 export const FEATURED_PRODUCTS_CATEGORY_ID =
   "597574d7-8606-436d-9028-d59ae4a0b0e7";
+
+export const ACCESSORIES_CATEGORY_ID = "5d620506-dd68-4f2a-890d-8cd5ebf10217";
+
+export const CLOTHES_CATEGORY_ID = "d488fb93-679b-47a8-aa7a-adeab76fbdb9";
