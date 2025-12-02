@@ -4,7 +4,7 @@ import { FEATURED_PRODUCTS_CATEGORY_ID } from "@/lib/wix.categories";
 import { getProductsByCategoryId } from "@/wix-api/products";
 
 export async function FeaturedProducts() {
-  await delay(3000);
+  await delay(1000);
 
   // GET THE PRODUCTS BASED ON CATEGORY ID AND INCLUDE ADDITIONAL FIELDS OF DATA TO BE RETURNED
   const products = await getProductsByCategoryId(
