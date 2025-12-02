@@ -43,3 +43,15 @@ export async function getProductsByCategoryId(id: string, fields: Fields[]) {
 
   return specificProducts;
 }
+
+// GET A SINGLE PRODUCT FROM WIX CMS
+export async function getProductBySlug(slug: string) {
+  const wixClient = myWixClient();
+
+  // RETRIEVES A SINGLE PRODUCT BY SLUG
+  const product = await wixClient.productsV3.getProductBySlug(slug, {
+    fields: ["CURRENCY", "PLAIN_DESCRIPTION", "DIRECT_CATEGORIES_INFO"],
+  });
+
+  return product;
+}
