@@ -8,10 +8,10 @@ const Footer = () => {
     <footer className="bg-background flex flex-col items-start gap-10 p-10 shadow-sm">
       {/* TOP SECTION */}
       <div className="flex max-w-4xl flex-col items-start gap-4 text-left">
-        <p className="text-xl font-bold tracking-wide">Nurri</p>
+        <p className="text-xl font-bold tracking-wide">Nirra</p>
 
         <span className="max-w-4xl text-sm">
-          Nurri is a modern label for everyday style. We focus on quality, fit
+          Nirra is a modern label for everyday style. We focus on quality, fit
           and comfort. Build a wardrobe that works!
         </span>
 
@@ -90,7 +90,7 @@ const Footer = () => {
 
       {/* COPYRIGHT */}
       <div className="text-muted-foreground mt-5 text-xs">
-        © {new Date().getFullYear()} Nurri. All rights reserved.
+        © {new Date().getFullYear()} Nirra. All rights reserved.
       </div>
     </footer>
   );

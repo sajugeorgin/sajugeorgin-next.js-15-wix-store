@@ -7,13 +7,35 @@ import WixImage from "../wix/WixImage";
 import ProductBadge from "./ProductBadge";
 import { productsV3 } from "@wix/stores";
 import ProductOptions from "./ProductOptions";
+import { useState } from "react";
+import { checkInStock, findVariant } from "@/lib/utils";
 
 interface ProductDetailsProps {
-  product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 API SDK
+  product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 WIX API SDK
 }
 
 const ProductDetails = ({ product }: ProductDetailsProps) => {
-  // EXTRACT PRODUCT DETAILS AS NEEDED
+  // STORE PRODUCT QUANTITY
+  const [qauntity, setQuantity] = useState(1);
+
+  // STORE PRODOCT OPTIONS E.G. PRODUCT VARIANTS... COLOR & SIZE
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >(
+    product.options
+      ?.map((option) => ({
+        [option.name || ""]: option.choicesSettings?.choices?.[0].name || "",
+      }))
+      ?.reduce((acc, curr) => ({ ...acc, ...curr }), {}) || {},
+  );
+
+  // GET ALL SPECIFIC VARIANT INFOMATION
+  const selectedVariant = findVariant(product, selectedOptions);
+
+  // CHECK WHETHER THE SPECIFIC VARIANT IS IN STOCK
+  const variantInStock = checkInStock(product, selectedOptions);
+
+  // EXTRACT PRODUCT DETAILS FOR RENDERING
   const productImage = product?.media?.main?.image;
   const productImageAltText = product.media?.main?.altText;
 
@@ -51,7 +73,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           {productName}
         </h1>
 
-        {/* ------------------------------------------------------- */}
         <div className="flex flex-row items-center gap-60 md:gap-64 lg:gap-70">
           {/* 1. */}
           <div className="flex flex-col gap-3">
@@ -67,7 +88,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           </div>
 
           {/* 2 */}
-          <div className="bg-primary/60 rotate-2 space-x-2 rounded-tr-lg rounded-bl-lg p-2 text-xl">
+          <div className="bg-primary space-x-2 p-2 text-xl">
             {/* CURRENT PRICE */}
             <span>£{productCurrentPrice.toFixed(2)}</span>
 
@@ -81,7 +102,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             </span>
           </div>
         </div>
-        {/* ------------------------------------------------------- */}
 
         {/* DESCRIPTION */}
         <div
@@ -91,8 +111,12 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           }}
         />
 
-        {/* PRODUCT OPTIONS E.G. COLOR, SIZE ETC. */}
-        <ProductOptions product={product} />
+        {/* PRODUCT OPTIONS - SEPARATE COMPONENT - E.G. COLOR, SIZE ETC. */}
+        <ProductOptions
+          product={product}
+          selectedOptions={selectedOptions}
+          setSelectedOptions={setSelectedOptions}
+        />
 
         {/* QUANTITY */}
         <div className="mt-5 flex w-[35%] flex-col gap-2">
@@ -112,6 +136,19 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           <CreditCard />
           Buy Now
         </Button>
+
+        <div className="max-w-5xl bg-yellow-200 text-wrap">
+          In stock: {JSON.stringify(variantInStock)}
+        </div>
+
+        <div className="max-w-5xl bg-green-300 text-wrap">
+          Selected options: {JSON.stringify(selectedOptions)}
+        </div>
+
+        <div className="max-w-5xl bg-purple-300 text-wrap">
+          Selected variant:{" "}
+          <pre>{JSON.stringify(selectedVariant, null, 2)}</pre>
+        </div>
       </div>
     </div>
   );

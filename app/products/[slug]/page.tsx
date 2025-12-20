@@ -1,10 +1,5 @@
-import ProductBadge from "@/components/products/ProductBadge";
 import ProductDetails from "@/components/products/ProductDetails";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import WixImage from "@/components/wix/WixImage";
 import { getProductBySlug } from "@/wix-api/products";
-import { CreditCard, ShoppingBasket } from "lucide-react";
 import { notFound } from "next/navigation";
 
 type PageParams = {
@@ -30,9 +25,13 @@ export default async function Page(props: { params: Promise<PageParams> }) {
 
   return (
     <main className="mx-auto max-w-7xl space-y-10 px-5 py-10">
+      {/* PRODUCT DETAILS COMPONENT - PASS THE PRODUCT AS A PROP */}
       <ProductDetails product={product} />
-      
-      <pre>{JSON.stringify(product, null, 2)}</pre>
+
+      <pre className="max-w-5xl bg-red-300 text-wrap">
+        Product Details:
+        <div>{JSON.stringify(product, null, 2)}</div>
+      </pre>
     </main>
   );
 }
