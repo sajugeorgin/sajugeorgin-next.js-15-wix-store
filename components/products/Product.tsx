@@ -89,7 +89,9 @@ export default function Product({ product }: IAllProducts) {
           {/* DISPLAY PREVIOUS PRICE IF ITS BIGGER THAN THE CURRENT PRICE */}
           <span>
             {previousPrice > currentPrice && (
-              <span className="line-through">£{previousPrice.toFixed()}</span>
+              <span className="text-gray-900 line-through opacity-70">
+                £{previousPrice.toFixed()}
+              </span>
             )}
           </span>
         </div>

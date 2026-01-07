@@ -3,12 +3,12 @@
 import { CreditCard, ShoppingBasket } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import WixImage from "../wix/WixImage";
 import ProductBadge from "./ProductBadge";
 import { productsV3 } from "@wix/stores";
 import ProductOptions from "./ProductOptions";
 import { useState } from "react";
 import { checkInStock, findVariant } from "@/lib/utils";
+import ProductMedia from "./ProductMedia";
 
 interface ProductDetailsProps {
   product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 WIX API SDK
@@ -36,76 +36,72 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
   const variantInStock = checkInStock(product, selectedOptions);
 
   // EXTRACT PRODUCT DETAILS FOR RENDERING
-  const productImage = product?.media?.main?.image;
-  const productImageAltText = product.media?.main?.altText;
+  const mediaItems = product.media?.itemsInfo?.items;
 
   const productName = product.name;
   const productBrand = product.brand?.name;
 
-  const productCurrentPrice = Number(
-    product.actualPriceRange?.minValue?.amount ?? 0,
-  );
-
-  const productPreviousPrice = Number(
-    product.compareAtPriceRange?.minValue?.amount ?? 0,
-  );
-
   const productRibbon = product.ribbon?.name;
   const productDescription = product.plainDescription;
 
+  // UNDEFINED CHECK
+  if (!mediaItems) {
+    return null;
+  }
+
   return (
-    <div className="flex flex-col items-start gap-10 transition-all duration-200 md:flex-row lg:gap-20">
-      {/* CUSTOM WIX IMAGE COMPONENT */}
-      <div className="basis-2/5 overflow-hidden">
-        <WixImage
-          productImage={productImage}
-          width={1000}
-          height={1000}
-          alt={productImageAltText}
-          className="sticky top-0 transition-all duration-300 hover:scale-105"
-        />
-      </div>
+    <div className="flex flex-col gap-6 md:flex-row md:gap-10 lg:gap-20">
+      {/* CUSTOM PRODUCT MEDIA COMPONENT */}
+      <ProductMedia mediaItems={mediaItems} />
 
       {/* MAIN PRODUCT INFORMATION */}
-      <div className="flex basis-3/5 flex-col items-start gap-3">
-        {/* NAME */}
-        <h1 className="text-xl font-bold tracking-wide lg:text-3xl">
-          {productName}
-        </h1>
+      <div className="flex w-full flex-col gap-4 md:basis-3/5">
+        {/* NAME AND OUT OF STOCK BADGE */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-wide lg:text-3xl">
+            {productName}
+          </h1>
 
-        <div className="flex flex-row items-center gap-60 md:gap-64 lg:gap-70">
-          {/* 1. */}
-          <div className="flex flex-col gap-3">
-            {/* BRAND */}
+          {!variantInStock && (
+            <ProductBadge className="bg-red-400">
+              Variant Out of Stock
+            </ProductBadge>
+          )}
+        </div>
+
+        {/* BRAND, RIBBON AND PRICE */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          {/* LEFT SIDE: BRAND AND RIBBON */}
+          <div className="flex flex-col gap-2">
             {productBrand && (
               <span className="text-muted-foreground text-xs">
                 {productBrand}
               </span>
             )}
 
-            {/* RIBBON */}
             {productRibbon && <ProductBadge>{productRibbon}</ProductBadge>}
           </div>
 
-          {/* 2 */}
-          <div className="bg-primary space-x-2 p-2 text-xl">
-            {/* CURRENT PRICE */}
-            <span>£{productCurrentPrice.toFixed(2)}</span>
+          {/* RIGHT SIDE: PRICE */}
+          <div className="flex items-center gap-3 bg-green-400/55 p-3 text-xl font-semibold">
+            <div className="flex items-center gap-2">
+              <span>£{selectedVariant?.price?.actualPrice?.amount}</span>
+            </div>
 
-            {/* PREVIOUS PRICE IF ITS BIGGER THAN THE CURRENT PRICE */}
-            <span>
-              {productPreviousPrice > productCurrentPrice && (
-                <span className="line-through">
-                  £{productPreviousPrice.toFixed()}
+            {/* IF THE COMPARE AT PRICE EXISTS AND ITS HIGHER THAN THE ACTUAL PRICE */}
+            {selectedVariant?.price?.compareAtPrice?.amount &&
+              Number(selectedVariant.price.compareAtPrice.amount) >
+                Number(selectedVariant.price.actualPrice?.amount) && (
+                <span className="text-base font-normal text-gray-900 line-through opacity-80">
+                  £{selectedVariant.price.compareAtPrice.amount}
                 </span>
               )}
-            </span>
           </div>
         </div>
 
         {/* DESCRIPTION */}
         <div
-          className="pro my-5 text-sm"
+          className="prose prose-sm my-3 max-w-none"
           dangerouslySetInnerHTML={{
             __html: productDescription || "",
           }}
@@ -119,36 +115,42 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         />
 
         {/* QUANTITY */}
-        <div className="mt-5 flex w-[35%] flex-col gap-2">
-          <span className="text-sm">Quantity:</span>
-
-          <Input type="number" />
+        <div className="mt-4 flex flex-col gap-2">
+          <span className="text-sm font-medium">Quantity:</span>
+          <Input type="number" className="w-24" min="1" defaultValue="1" />
         </div>
 
-        {/* ADD TO CART CTA */}
-        <Button className="w-[70%] cursor-pointer rounded-none bg-orange-400 hover:bg-orange-400/70">
-          <ShoppingBasket />
-          Add to Cart
-        </Button>
+        {/* ADD TO CART AND BUY NOW BUTTONS */}
+        <div className="mt-4 flex w-full flex-col gap-3">
+          <Button
+            className="w-full cursor-pointer rounded-none bg-orange-400 hover:bg-orange-400/70"
+            disabled={!variantInStock}
+          >
+            <ShoppingBasket className="mr-2 h-4 w-4" />
+            Add to Cart
+          </Button>
 
-        {/* BUY NOW CTA */}
-        <Button className="w-[70%] cursor-pointer rounded-none bg-gray-300 hover:bg-gray-300/70">
-          <CreditCard />
-          Buy Now
-        </Button>
+          <Button
+            className="w-full cursor-pointer rounded-none bg-gray-300 text-black hover:bg-gray-300/70"
+            disabled={!variantInStock}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Buy Now
+          </Button>
+        </div>
 
-        <div className="max-w-5xl bg-yellow-200 text-wrap">
+        {/* <div className="max-w-5xl bg-yellow-200 text-sm text-wrap">
           In stock: {JSON.stringify(variantInStock)}
         </div>
 
-        <div className="max-w-5xl bg-green-300 text-wrap">
+        <div className="max-w-5xl bg-green-300 text-sm text-wrap">
           Selected options: {JSON.stringify(selectedOptions)}
         </div>
 
         <div className="max-w-5xl bg-purple-300 text-wrap">
           Selected variant:{" "}
           <pre>{JSON.stringify(selectedVariant, null, 2)}</pre>
-        </div>
+        </div> */}
       </div>
     </div>
   );

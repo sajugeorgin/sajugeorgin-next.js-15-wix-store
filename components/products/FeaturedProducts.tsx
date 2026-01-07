@@ -4,8 +4,6 @@ import { FEATURED_PRODUCTS_CATEGORY_ID } from "@/lib/wix.categories";
 import { getProductsByCategoryId } from "@/wix-api/products";
 
 export async function FeaturedProducts() {
-  await delay(1000);
-
   // GET THE PRODUCTS BASED ON CATEGORY ID AND INCLUDE ADDITIONAL FIELDS OF DATA TO BE RETURNED
   const products = await getProductsByCategoryId(
     FEATURED_PRODUCTS_CATEGORY_ID,
@@ -31,10 +29,18 @@ export async function FeaturedProducts() {
         ))}
       </div>
 
-      {/* PLACEHOLDER TO SEE JSON USING HTML <PRE/> TAG - USEFUL FOR DEVELOPMENT */}
-      {/* <pre>
-        {JSON.stringify(featuredProducts[featuredProducts.length - 1], null, 2)}
-      </pre> */}
+      {/* DEV PURPOSE! */}
+      {/* <div className="container w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <details className="bg-muted rounded-lg p-4">
+          <summary className="mb-2 cursor-pointer font-semibold">
+            Debug: Product Data
+          </summary>
+
+          <pre className="overflow-auto text-xs">
+            {JSON.stringify(products[2], null, 2)}
+          </pre>
+        </details>
+      </div> */}
     </div>
   );
 }
