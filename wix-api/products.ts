@@ -1,6 +1,7 @@
 // WILL HOLD ALL THE LOGIC RELATED TO THE WIX PRODUCTS
 
 import { myWixClient } from "@/lib/wix-client.base";
+import { cache } from "react";
 
 export type Fields =
   | "THUMBNAIL"
@@ -44,14 +45,51 @@ export async function getProductsByCategoryId(id: string, fields: Fields[]) {
   return specificProducts;
 }
 
-// GET A SINGLE PRODUCT FROM WIX CMS
-export async function getProductBySlug(slug: string) {
+// GET A SINGLE PRODUCT FROM WIX CMS BY PRODUCT SLUG
+// WRAPPED IN cache() TO PREVENT DUPLICATE API CALLS DURING THE SAME REQUEST
+//
+// WHY cache() IS IMPORTANT:
+// In Next.js, the same data is often needed in multiple places during a single request:
+// 1. generateMetadata() needs product data to create page metadata
+// 2. Page component needs the same product data to render the UI
+//
+// WITHOUT cache():
+// - getProductBySlug would be called TWICE per render
+// - Example: User visits /products/leather-shoes
+//   → generateMetadata() calls getProductBySlug("leather-shoes") ← API CALL 1
+//   → Page component calls getProductBySlug("leather-shoes") ← API CALL 2
+// - Result: 2 API calls, slower page load, wasted resources
+//
+// WITH cache():
+// - First call fetches from API and stores result in memory
+// - Second call returns cached result instantly (no API call)
+// - Example: User visits /products/leather-shoes
+//   → generateMetadata() calls getProductBySlug("leather-shoes") ← API CALL 1 (cached)
+//   → Page component calls getProductBySlug("leather-shoes") ← INSTANT (from cache)
+// - Result: 1 API call, faster page load, efficient
+//
+// CACHE BEHAVIOR:
+// - Cache is per-request only (not shared between users)
+// - Automatically cleared after request completes
+// - Safe to use with dynamic data
+// - Only works in Server Components (not Client Components)
+
+export const getProductBySlug = cache(async (slug: string) => {
+  // console.log("getProductBySlug"); // Will only log ONCE per request now
+
   const wixClient = myWixClient();
 
   // RETRIEVES A SINGLE PRODUCT BY SLUG
   const product = await wixClient.productsV3.getProductBySlug(slug, {
-    fields: ["CURRENCY", "PLAIN_DESCRIPTION", "DIRECT_CATEGORIES_INFO"],
+    // SPECIFY ADDITIONAL FIELDS TO RETRIEVE FROM WIX BACKEND
+    fields: [
+      "CURRENCY",
+      "DESCRIPTION",
+      "PLAIN_DESCRIPTION",
+      "MEDIA_ITEMS_INFO",
+      "DIRECT_CATEGORIES_INFO",
+    ],
   });
 
   return product;
-}
+});
