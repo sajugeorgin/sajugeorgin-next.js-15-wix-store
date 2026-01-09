@@ -6,9 +6,11 @@ import { Input } from "../ui/input";
 import ProductBadge from "./ProductBadge";
 import { productsV3 } from "@wix/stores";
 import ProductOptions from "./ProductOptions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { checkInStock, findVariant } from "@/lib/utils";
 import ProductMedia from "./ProductMedia";
+import { Label } from "../ui/label";
+import { StockResponse } from "@/types/stock.types";
 
 interface ProductDetailsProps {
   product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 WIX API SDK
@@ -16,7 +18,7 @@ interface ProductDetailsProps {
 
 const ProductDetails = ({ product }: ProductDetailsProps) => {
   // STORE PRODUCT QUANTITY
-  const [qauntity, setQuantity] = useState(1);
+  const [qauntity, setQuantity] = useState(0);
 
   // STORE PRODOCT OPTIONS E.G. PRODUCT VARIANTS... COLOR & SIZE
   const [selectedOptions, setSelectedOptions] = useState<
@@ -29,11 +31,16 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
       ?.reduce((acc, curr) => ({ ...acc, ...curr }), {}) || {},
   );
 
+  // STOCK STATE MANAGEMENT
+  const [stockData, setStockData] = useState<StockResponse | null>(null);
+  const [isLoadingStock, setIsLoadingStock] = useState<boolean>(false);
+  const [stockError, setStockError] = useState<string | null>(null);
+
   // GET ALL SPECIFIC VARIANT INFOMATION
   const selectedVariant = findVariant(product, selectedOptions);
 
   // CHECK WHETHER THE SPECIFIC VARIANT IS IN STOCK
-  const variantInStock = checkInStock(product, selectedOptions);
+  const basicInStockCheck = checkInStock(product, selectedOptions);
 
   // EXTRACT PRODUCT DETAILS FOR RENDERING
   const mediaItems = product.media?.itemsInfo?.items;
@@ -43,6 +50,62 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
   const productRibbon = product.ribbon?.name;
   const productDescription = product.plainDescription;
+
+  // FETCH STOCK DATA WHEN VARIANT CHANGES
+  // CUSTOM VARIANT QUANTITY CHECK USING ROUTE HANDLER WITH WIX API
+  useEffect(() => {
+    const fetchStock = async () => {
+      // IF NOTHING IS SELECTED RETURN EARLY
+      if (!selectedVariant?._id) {
+        setStockData(null);
+        return;
+      }
+
+      // SET STATES
+      setIsLoadingStock(true);
+      setStockError(null);
+
+      // MAIN FETCH BLOCK - CALLS THE API ROUTE TO GET STOCK DATA
+      try {
+        // RESPONSE - CALL THE CUSTOM API ROUTE
+        const response = await fetch("/api/variant-stock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variantId: selectedVariant._id }),
+        });
+
+        // RESOLVE - CHECK FOR ERRORS
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data: StockResponse = await response.json();
+
+        // SET DATA STATE - SUCCESS
+        setStockData(data);
+      } catch (error) {
+        // SET ERROR STATE - FAILURE
+        console.error("Failed to fetch stock:", error);
+        setStockError("Unable to check stock quantity.");
+        setStockData(null);
+      } finally {
+        // STOP LOADING
+        setIsLoadingStock(false);
+      }
+    };
+
+    // PERFORMANCE OPTIMIZATION (DEBOUNCE - WAIT 500MS)
+    const timer = setTimeout(() => {
+      fetchStock();
+    }, 500);
+
+    // CLEANUP
+    return () => clearTimeout(timer);
+  }, [selectedVariant?._id]);
+
+  // DETERMINE IF THE VARIANT IS IN STOCK (V2 METHOD)
+  // CUSTOM VARIANT QUANTITY CHECK USING ROUTE HANDLER WITH WIX API
+  const variantQuantity = stockData?.quantity ?? 0;
 
   // UNDEFINED CHECK
   if (!mediaItems) {
@@ -62,7 +125,13 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             {productName}
           </h1>
 
-          {!variantInStock && (
+          {variantQuantity <= 3 && basicInStockCheck && (
+            <ProductBadge className="bg-orange-300">
+              Low Stock - Act Fast!
+            </ProductBadge>
+          )}
+
+          {!basicInStockCheck && (
             <ProductBadge className="bg-red-400">
               Variant Out of Stock
             </ProductBadge>
@@ -116,15 +185,42 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
         {/* QUANTITY */}
         <div className="mt-4 flex flex-col gap-2">
-          <span className="text-sm font-medium">Quantity:</span>
-          <Input type="number" className="w-24" min="1" defaultValue="1" />
+          <Label
+            id="qauntity"
+            htmlFor="qauntity"
+            className="text-sm font-medium"
+          >
+            Quantity:
+            {isLoadingStock ? (
+              <span>Retrieving quantity...</span>
+            ) : stockError ? (
+              <span className="text-red-500">{stockError}</span>
+            ) : basicInStockCheck && variantQuantity > 0 ? (
+              <span>{variantQuantity} available.</span>
+            ) : (
+              <span className="font-semibold text-red-500">
+                Out of Stock. BRB!
+              </span>
+            )}
+          </Label>
+
+          <Input
+            name="qauntity"
+            type="number"
+            value={qauntity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="w-26"
+            min={qauntity}
+            max={variantQuantity}
+            disabled={!basicInStockCheck}
+          />
         </div>
 
         {/* ADD TO CART AND BUY NOW BUTTONS */}
         <div className="mt-4 flex w-full flex-col gap-3">
           <Button
             className="w-full cursor-pointer rounded-none bg-orange-400 hover:bg-orange-400/70"
-            disabled={!variantInStock}
+            disabled={!basicInStockCheck}
           >
             <ShoppingBasket className="mr-2 h-4 w-4" />
             Add to Cart
@@ -132,7 +228,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
           <Button
             className="w-full cursor-pointer rounded-none bg-gray-300 text-black hover:bg-gray-300/70"
-            disabled={!variantInStock}
+            disabled={!basicInStockCheck}
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Buy Now
@@ -141,15 +237,39 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
         {/* <div className="max-w-5xl bg-yellow-200 text-sm text-wrap">
           In stock: {JSON.stringify(variantInStock)}
-        </div>
+        </div> */}
 
-        <div className="max-w-5xl bg-green-300 text-sm text-wrap">
+        {/* <div className="max-w-5xl bg-green-300 text-sm text-wrap">
           Selected options: {JSON.stringify(selectedOptions)}
-        </div>
+        </div> */}
 
-        <div className="max-w-5xl bg-purple-300 text-wrap">
+        {/* <div className="max-w-5xl bg-purple-300 text-wrap">
           Selected variant:{" "}
           <pre>{JSON.stringify(selectedVariant, null, 2)}</pre>
+        </div> */}
+
+        {/* <div className="container w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <details className="bg-muted rounded-lg p-4">
+            <summary className="mb-2 cursor-pointer font-semibold">
+              Debug: Product Variant Data
+            </summary>
+
+            <pre className="overflow-auto text-xs">
+              {JSON.stringify(selectedVariant, null, 2)}
+            </pre>
+          </details>
+        </div> */}
+
+        {/* <div className="container w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <details className="bg-muted rounded-lg p-4">
+            <summary className="mb-2 cursor-pointer font-semibold">
+              Debug: Product Variant Data
+            </summary>
+
+            <pre className="overflow-auto text-xs">
+              {JSON.stringify(selectedVariant, null, 2)}
+            </pre>
+          </details>
         </div> */}
       </div>
     </div>

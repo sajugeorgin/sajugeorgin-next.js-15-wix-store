@@ -53,7 +53,7 @@ const ProductMedia = ({ mediaItems }: ProductMediaProps) => {
   const mainVideoUrl = mainVideoObject?.url;
 
   return (
-    <div className="h-fit w-full md:sticky md:top-0 md:basis-2/5">
+    <div className="h-fit w-full md:sticky md:top-4 md:basis-2/5">
       {/* INITIAL PRODUCT IMAGE/ VIDEO */}
       <div className="flex aspect-square items-center justify-center">
         {!isMounted ? (

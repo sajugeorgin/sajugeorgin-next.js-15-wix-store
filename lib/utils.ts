@@ -50,7 +50,7 @@ export function findVariant(
   });
 }
 
-// Check if a variant is still in stock
+// Check if a variant is in stock
 export function checkInStock(
   product: productsV3.V3Product,
   selectedOptions: Record<string, string>,
