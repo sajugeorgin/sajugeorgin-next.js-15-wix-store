@@ -11,6 +11,7 @@ import { checkInStock, findVariant } from "@/lib/utils";
 import ProductMedia from "./ProductMedia";
 import { Label } from "../ui/label";
 import { StockResponse } from "@/types/stock.types";
+import ProductAdditionalInfo from "./ProductAdditionalInfo";
 
 interface ProductDetailsProps {
   product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 WIX API SDK
@@ -210,7 +211,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             value={qauntity}
             onChange={(e) => setQuantity(Number(e.target.value))}
             className="w-26"
-            min={qauntity}
             max={variantQuantity}
             disabled={!basicInStockCheck}
           />
@@ -235,9 +235,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           </Button>
         </div>
 
-        {/* <div className="max-w-5xl bg-yellow-200 text-sm text-wrap">
-          In stock: {JSON.stringify(variantInStock)}
-        </div> */}
+        <ProductAdditionalInfo />
 
         {/* <div className="max-w-5xl bg-green-300 text-sm text-wrap">
           Selected options: {JSON.stringify(selectedOptions)}
@@ -251,11 +249,11 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         {/* <div className="container w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <details className="bg-muted rounded-lg p-4">
             <summary className="mb-2 cursor-pointer font-semibold">
-              Debug: Product Variant Data
+              Debug: Product Data
             </summary>
 
             <pre className="overflow-auto text-xs">
-              {JSON.stringify(selectedVariant, null, 2)}
+              {JSON.stringify(product, null, 2)}
             </pre>
           </details>
         </div> */}
