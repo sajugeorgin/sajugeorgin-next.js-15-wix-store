@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, ShoppingBasket } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import ProductBadge from "./ProductBadge";
@@ -12,6 +12,7 @@ import ProductMedia from "./ProductMedia";
 import { Label } from "../ui/label";
 import { StockResponse } from "@/types/stock.types";
 import ProductAdditionalInfo from "./ProductAdditionalInfo";
+import AddToCartButton from "../cart/AddToCartButton";
 
 interface ProductDetailsProps {
   product: productsV3.V3Product; // THE DEFAULT TYPE OF PRODUCTS IN THE V3 WIX API SDK
@@ -211,20 +212,23 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             value={qauntity}
             onChange={(e) => setQuantity(Number(e.target.value))}
             className="w-26"
+            min={0}
             max={variantQuantity}
             disabled={!basicInStockCheck}
           />
         </div>
 
         {/* ADD TO CART AND BUY NOW BUTTONS */}
+        {/* WE NEED THE CART ID FROM THE WIX SERVER WHICH WE */}
+        {/* WILL STORE IN COOKIES WHICH IS AVAILABLE IN SERVER & CLIENT COMPONENTS */}
         <div className="mt-4 flex w-full flex-col gap-3">
-          <Button
+          <AddToCartButton
+            product={product}
+            selectedOptions={selectedOptions}
+            quantity={qauntity}
             className="w-full cursor-pointer rounded-none bg-orange-400 hover:bg-orange-400/70"
             disabled={!basicInStockCheck}
-          >
-            <ShoppingBasket className="mr-2 h-4 w-4" />
-            Add to Cart
-          </Button>
+          />
 
           <Button
             className="w-full cursor-pointer rounded-none bg-gray-300 text-black hover:bg-gray-300/70"

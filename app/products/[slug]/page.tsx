@@ -1,6 +1,7 @@
 import ProductDetails from "@/components/products/ProductDetails";
 import { extractRichText } from "@/lib/metadata";
 import { delay } from "@/lib/utils";
+import { getWixServerClient } from "@/lib/wix-client.server";
 import { getProductBySlug } from "@/wix-api/products";
 import { productsV3 } from "@wix/stores";
 import { Metadata } from "next";
@@ -23,7 +24,8 @@ export async function generateMetadata(props: {
 
   // USE TRY CATCH BLOCK OTHERWISE THE NOTFOUND() PAGE WILL NOT BE DISPLAYED
   try {
-    product = (await getProductBySlug(slug)).product;
+    product = (await getProductBySlug(await getWixServerClient(), slug))
+      .product;
   } catch {
     return notFound();
   }
@@ -59,7 +61,8 @@ export default async function Page(props: { params: Promise<PageParams> }) {
 
   // USE TRY CATCH BLOCK OTHERWISE THE NOTFOUND() PAGE WILL NOT BE DISPLAYED
   try {
-    product = (await getProductBySlug(slug)).product;
+    product = (await getProductBySlug(await getWixServerClient(), slug))
+      .product;
   } catch {
     return notFound();
   }

@@ -1,11 +1,12 @@
-import { delay } from "@/lib/utils";
 import Product from "./Product";
 import { FEATURED_PRODUCTS_CATEGORY_ID } from "@/lib/wix.categories";
 import { getProductsByCategoryId } from "@/wix-api/products";
+import { getWixServerClient } from "@/lib/wix-client.server";
 
 export async function FeaturedProducts() {
   // GET THE PRODUCTS BASED ON CATEGORY ID AND INCLUDE ADDITIONAL FIELDS OF DATA TO BE RETURNED
   const products = await getProductsByCategoryId(
+    await getWixServerClient(),
     FEATURED_PRODUCTS_CATEGORY_ID,
     ["CURRENCY", "DIRECT_CATEGORIES_INFO", "PLAIN_DESCRIPTION"],
   );

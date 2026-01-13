@@ -3,20 +3,16 @@ import Link from "next/link";
 import logo from "@/assets/logo.png";
 import { ShoppingCartIcon } from "lucide-react";
 import { getCart } from "@/wix-api/cart";
+import { getWixServerClient } from "@/lib/wix-client.server";
 
 const Navbar = async () => {
   // GET THE USERS CART (AWAIT) AND RETURN THE CART OBJECT FROM THE RESPONSE
-  const currentCart = await getCart().then((res) => {
-    return res?.cart;
-  });
+  const cart = await getCart(await getWixServerClient());
 
   // LINE ITEMS IN THE CART BY THE CUSTOMER
-  // USE A REDUCER TO CALCULATE THE TOTAL ITEMS
-  const totalQuantity =
-    currentCart?.lineItems?.reduce(
-      (acc, item) => (acc += item.quantityInfo?.requestedQuantity || 0),
-      0,
-    ) || 0;
+  // USE A REDUCER TO CALCULATE THE TOTAL ITEMS IN THE CART
+  const quantity =
+    cart?.lineItems?.reduce((acc, item) => (acc += item.quantity || 0), 0) || 0;
 
   return (
     <header className="bg-background shadow-sm">
@@ -29,9 +25,21 @@ const Navbar = async () => {
 
         <div className="flex items-center gap-2">
           <ShoppingCartIcon className="size-5" />
-
-          {totalQuantity}
+          {quantity ?? 0} items in the cart.
         </div>
+      </div>
+
+      {/* DEV PURPOSE! */}
+      <div className="container w-full max-w-7xl px-2 py-4 sm:px-4 lg:px-6">
+        <details className="bg-muted rounded-lg p-4">
+          <summary className="cursor-pointer font-semibold">
+            Debug: Items in the cart
+          </summary>
+
+          <pre className="overflow-auto text-xs">
+            {JSON.stringify(cart?.lineItems, null, 2)}
+          </pre>
+        </details>
       </div>
     </header>
   );
