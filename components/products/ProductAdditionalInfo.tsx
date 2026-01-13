@@ -17,7 +17,9 @@ const ProductAdditionalInfo = () => {
 
         <Accordion type="multiple" className="w-full">
           <AccordionItem value="shipping_delivery" key="shipping_delivery">
-            <AccordionTrigger>Shipping & Delivery</AccordionTrigger>
+            <AccordionTrigger className="cursor-pointer">
+              Shipping & Delivery
+            </AccordionTrigger>
             <AccordionContent>
               <div
                 dangerouslySetInnerHTML={{
@@ -30,7 +32,9 @@ const ProductAdditionalInfo = () => {
           </AccordionItem>
 
           <AccordionItem value="returns" key="returns">
-            <AccordionTrigger>Return Policy</AccordionTrigger>
+            <AccordionTrigger className="cursor-pointer">
+              Return Policy
+            </AccordionTrigger>
             <AccordionContent>
               <div
                 dangerouslySetInnerHTML={{
@@ -43,7 +47,9 @@ const ProductAdditionalInfo = () => {
           </AccordionItem>
 
           <AccordionItem value="warranty" key="warranty">
-            <AccordionTrigger>Warranty & Support</AccordionTrigger>
+            <AccordionTrigger className="cursor-pointer">
+              Warranty & Support
+            </AccordionTrigger>
             <AccordionContent>
               <div
                 dangerouslySetInnerHTML={{

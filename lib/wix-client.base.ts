@@ -1,18 +1,20 @@
-import { createClient, OAuthStrategy } from "@wix/sdk";
-import { currentCartV2, checkout } from "@wix/ecom";
-import { productsV3 } from "@wix/stores";
+import { createClient, OAuthStrategy, Tokens } from "@wix/sdk";
+import { currentCart, checkout } from "@wix/ecom";
+import { productsV3, collections } from "@wix/stores";
 import { reviews } from "@wix/reviews";
 import { files } from "@wix/media";
 import { members } from "@wix/members";
 import { redirects } from "@wix/redirects";
 import { env } from "@/config/env";
 
-export function myWixClient() {
+// PASS THE TOKENS WHEN CREATING THE WIX CLIENT
+export function myWixClient(tokens: Tokens | undefined) {
   return createClient({
     modules: {
-      currentCartV2,
+      currentCart,
       checkout,
       productsV3,
+      collections,
       redirects,
       files,
       reviews,
@@ -20,6 +22,10 @@ export function myWixClient() {
     },
     auth: OAuthStrategy({
       clientId: env.NEXT_PUBLIC_WIX_CLIENT_ID,
+      tokens,
     }),
   });
 }
+
+// EXPORTING THE TYPE OF THE WIX CLIENT RETURN VALUE
+export type WixClientType = ReturnType<typeof myWixClient>;
